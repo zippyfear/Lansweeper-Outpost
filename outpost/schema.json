@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/zippyfear/Lansweeper-Outpost/outpost/schema.json",
+  "title": "Outpost asset schema",
+  "description": "Wire contract shared by sensor, hub, dashboard. Wire version 0.1. Forward-compatible: unknown properties are permitted and should be ignored by older consumers.",
+  "$defs": {
+    "Service": {
+      "type": "object",
+      "required": ["port", "proto"],
+      "properties": {
+        "port": {"type": "integer", "minimum": 0, "maximum": 65535},
+        "proto": {"type": "string", "enum": ["tcp", "udp"]},
+        "name": {"type": ["string", "null"]},
+        "product": {"type": ["string", "null"]},
+        "version": {"type": ["string", "null"]}
+      }
+    },
+    "Interface": {
+      "type": "object",
+      "required": ["mac", "ips"],
+      "properties": {
+        "mac": {"type": "string"},
+        "vendor": {"type": ["string", "null"]},
+        "ips": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "Observation": {
+      "type": "object",
+      "required": [
+        "schema_version", "sensor_id", "observed_at", "ip",
+        "discovery_methods", "services"
+      ],
+      "properties": {
+        "schema_version": {"type": "string"},
+        "sensor_id": {"type": "string"},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "ip": {"type": "string"},
+        "mac": {"type": ["string", "null"]},
+        "hostname": {"type": ["string", "null"]},
+        "vendor": {"type": ["string", "null"]},
+        "discovery_methods": {"type": "array", "items": {"type": "string"}},
+        "services": {"type": "array", "items": {"$ref": "#/$defs/Service"}},
+        "snmp": {"type": ["object", "null"]},
+        "os_guess": {"type": ["object", "null"]},
+        "packet_count": {"type": ["integer", "null"]},
+        "extra": {"type": ["object", "null"]}
+      }
+    },
+    "Asset": {
+      "type": "object",
+      "required": [
+        "schema_version", "asset_id", "type", "interfaces", "hostnames",
+        "services", "discovery_methods", "sources", "first_seen", "last_seen"
+      ],
+      "properties": {
+        "schema_version": {"type": "string"},
+        "asset_id": {"type": "string"},
+        "type": {
+          "type": "string",
+          "enum": [
+            "server", "workstation", "laptop", "mobile", "network_device",
+            "printer", "storage", "hypervisor", "vm", "iot", "ot_medical",
+            "unknown"
+          ]
+        },
+        "type_confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "display_name": {"type": ["string", "null"]},
+        "interfaces": {"type": "array", "items": {"$ref": "#/$defs/Interface"}},
+        "hostnames": {"type": "array", "items": {"type": "string"}},
+        "os": {"type": ["object", "null"]},
+        "services": {"type": "array", "items": {"$ref": "#/$defs/Service"}},
+        "snmp": {"type": ["object", "null"]},
+        "identifiers": {"type": ["object", "null"]},
+        "discovery_methods": {"type": "array", "items": {"type": "string"}},
+        "sources": {"type": "array", "items": {"type": "string"}},
+        "tags": {"type": "array", "items": {"type": "string"}},
+        "first_seen": {"type": "string", "format": "date-time"},
+        "last_seen": {"type": "string", "format": "date-time"},
+        "attributes": {"type": ["object", "null"]}
+      }
+    }
+  }
+}
