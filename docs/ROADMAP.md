@@ -23,7 +23,9 @@ shipped.
 - Hub service: ingest API, asset store (PostgreSQL/TimescaleDB TBD).
 - Transport: mutual TLS + per-sensor provisioning token.
 - Sensor gains an outbound **shipper** draining the local SQLite buffer.
-- **Correlation/de-dup** by MAC across sensors; asset **change history**.
+- ✅ **Correlation/de-dup by MAC across sensors** — landed in v0.3.0
+  (`outpost/hub.py`, ADR-0011): strong-id > MAC > provisional-IP, cross-run
+  merge via interim SQLite store. Asset **change history** still pending.
 - Multi-sensor fan-in.
 
 ## Phase 3 — Dashboard

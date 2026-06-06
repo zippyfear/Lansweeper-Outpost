@@ -97,3 +97,22 @@ Format: **Context → Decision → Status → Consequences.**
 - **Status:** Accepted.
 - **Consequences:** Run command changed from `python3 sensor.py`. Hub and
   dashboard will live under `outpost/` too.
+
+### ADR-0011 — Hub v0: in-process correlation, SQLite store, anchor-derived IDs
+- **Context:** ADR-0009 fixed the identity *strategy*; the hub needed a concrete
+  first implementation. The valuable, hard-to-get-right part is the correlation
+  logic, not the transport or the storage engine.
+- **Decision:** Build the correlation engine first, framework-free
+  (`outpost/hub.py`): strong-id > MAC > provisional-IP resolution, with
+  provisional IP-only assets (no interface, IP in `attributes`, tagged
+  `provisional`) promoted/merged when a MAC later claims the IP. Persist via an
+  interim **SQLite** `AssetStore` that seeds the correlator with stored assets
+  so merges work across runs. Asset IDs are deterministic, derived from the
+  strongest available anchor (`strong-id` > `mac` > `ip`). Defer the ingest API,
+  mTLS transport, and the production store (Postgres/Timescale) to Phase 2.
+- **Status:** Accepted.
+- **Consequences:** Correlation is provable in isolation (`hub selftest`) and
+  portable for the Go rewrite (ADR-0003). The SQLite store is explicitly interim;
+  swapping it for Postgres must not change the engine. IP-derived IDs for
+  provisional assets are stable only until promotion — acceptable, since the
+  promoted asset keeps its ID and sheds the provisional tag in place.

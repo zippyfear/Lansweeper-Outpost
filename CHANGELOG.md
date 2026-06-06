@@ -7,6 +7,27 @@ adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 - (nothing yet)
 
+## [0.3.0] — 2026-06-06
+### Added
+- **Hub correlation engine** (`outpost/hub.py`, file v0.3.0) implementing the
+  ADR-0009 identity strategy: resolves each Observation by strong identifier
+  (serial/hw_uuid) > MAC > provisional IP. IP-only sightings become
+  interface-less assets tagged `provisional` (IP held in `attributes`); a later
+  MAC sighting for that IP **promotes/merges** the provisional asset in place.
+- **`AssetStore`** (interim SQLite) that seeds the correlator with stored assets
+  so merges work **across separate ingest runs**, and validates every asset
+  against the JSON Schema before persisting.
+- **CLI:** `ingest` (JSON array via file or stdin — pairs with the sensor's
+  `--dump`), `list`, `show`, `stats`, and a `selftest` proving the correlation
+  scenarios with no network.
+- Conservative `type` inference (SNMP → network-device, IPP/JetDirect → printer;
+  otherwise honest `unknown`).
+- ADR-0011 (hub v0 implementation decisions) recorded in `docs/DECISIONS.md`.
+
+### Changed
+- Project is now sensor **and** hub under the `outpost/` package; `pyproject.toml`
+  bumped to `0.3.0`. Schema wire unchanged (`0.1`).
+
 ## [0.2.0] — 2026-06-06
 ### Added
 - **Shared asset schema** — locked at wire version `0.1`.
@@ -55,6 +76,7 @@ adheres to [Semantic Versioning](https://semver.org/).
 - Sensor has no Hub-shipping path yet — fully standalone.
 - Assets keyed by IP; no cross-sensor de-duplication yet.
 
-[Unreleased]: https://github.com/zippyfear/Lansweeper-Outpost/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/zippyfear/Lansweeper-Outpost/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/zippyfear/Lansweeper-Outpost/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/zippyfear/Lansweeper-Outpost/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/zippyfear/Lansweeper-Outpost/releases/tag/v0.1.0

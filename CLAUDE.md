@@ -43,6 +43,7 @@ outpost/             installable package
   schema.py          Service / Interface / Observation / Asset + validation
   schema.json        authoritative JSON Schema
   sensor.py          sensor @ 0.2.0 (active ARP+TCP, passive sniff, SQLite buffer)
+  hub.py             hub @ 0.3.0 (correlation engine + SQLite asset store + CLI)
 pyproject.toml       deps: scapy, jsonschema
 ```
 
@@ -54,12 +55,22 @@ sudo python3 -m outpost.sensor --cidr 10.10.0.0/24 --once   # single scan, no pa
 python3 -m outpost.sensor --dump                            # emit schema-valid Observations
 ```
 
+Run the hub (correlate sensor observations into assets):
+```bash
+python3 -m outpost.hub selftest                             # prove correlation, no network
+python3 -m outpost.sensor --dump | python3 -m outpost.hub ingest -   # sensor -> hub
+python3 -m outpost.hub list                                 # one line per asset
+python3 -m outpost.hub stats                                # counts by type + provisional
+```
+
 ## Current state / next step
-- Released **0.2.0**: schema accepted and codified; sensor refactored to emit
-  canonical, validated Observations; consolidated into the `outpost/` package.
-- Next per `docs/ROADMAP.md`: the **hub** — an ingest path that drains sensor
-  buffers and performs the cross-sensor / strong-identifier correlation that
-  ADR-0009 specifies (provisional IP-only assets, merge as better data arrives).
+- Released **0.3.0**: hub correlation engine landed (`outpost/hub.py`, ADR-0011)
+  — strong-id > MAC > provisional-IP per ADR-0009, with cross-run merge via an
+  interim SQLite asset store. `python3 -m outpost.hub selftest` proves it.
+- Next per `docs/ROADMAP.md` (Phase 2): the sensor→hub **transport** — a sensor
+  shipper draining its SQLite buffer, an ingest API on the hub, and mTLS +
+  per-sensor token. Then asset **change history** and the production store
+  (Postgres/Timescale) to replace the interim SQLite.
 ```bash
 # if the repo isn't initialized on the server yet:
 git init && git add . && git commit -m "chore: import Lansweeper-Outpost v0.2.0"

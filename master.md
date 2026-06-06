@@ -8,7 +8,7 @@
 |---|---|
 | **Codename** | Outpost (working — final product name is a marketing decision, TBD) |
 | **Owner** | Lansweeper |
-| **Project version** | `0.2.0` |
+| **Project version** | `0.3.0` |
 | **Last updated** | 2026-06-06 |
 | **Repo** | https://github.com/zippyfear/Lansweeper-Outpost |
 
@@ -67,7 +67,7 @@ is purely a deployment topology** (see §4).
 |-----------|--------|---------|-------|
 | Asset schema | **Locked** | wire `0.1` | Shared contract. `outpost/schema.py` + `outpost/schema.json`. |
 | Sensor | **Prototype** | `0.2.0` | ARP+TCP active, passive sniff. Emits schema-valid Observations. |
-| Hub | Not started | — | Phase 2. |
+| Hub | **Prototype** | `0.3.0` | Correlation engine (ADR-0009) + SQLite asset store + CLI. Ingest API & sensor transport still Phase 2. |
 | Dashboard | Not started | — | Phase 3. |
 | Cloud sync | Not started | — | Phase 4, optional. |
 
@@ -98,7 +98,9 @@ Nothing in the code assumes co-location.
 - Code lives in one installable **`outpost/`** package (sensor today, hub/
   dashboard later) so every component validates against the same contract.
 - **ARP** discovery is local-subnet only — this is *why* multiple sensors exist.
-- Hub-scale storage (likely **PostgreSQL/TimescaleDB**) decided at Phase 2.
+- Hub-scale storage (likely **PostgreSQL/TimescaleDB**) decided at Phase 2; the
+  v0.3.0 hub uses an interim **SQLite** asset store (mirrors the sensor buffer)
+  so the correlation logic could land first (ADR-0011).
 
 ---
 
